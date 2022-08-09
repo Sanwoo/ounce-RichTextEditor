@@ -1,117 +1,107 @@
-let optionsButtons = document.querySelectorAll(".option-button");
-let advancedOptionButton = document.querySelectorAll(".adv-option-button");
-let fontName = document.getElementById("fontName");
-let fontSizeRef = document.getElementById("fontSize");
-let writingArea = document.getElementById("text-input");
-let linkButton = document.getElementById("createLink");
-let alignButtons = document.querySelectorAll(".align");
-let spacingButtons = document.querySelectorAll(".spacing");
-let formatButtons = document.querySelectorAll(".format");
-let scriptButtons = document.querySelectorAll(".script");
+let optionsButtons = document.querySelectorAll('.option-button')
+let advancedOptionButton = document.querySelectorAll('.adv-option-button')
+let fontName = document.getElementById('fontName')
+let fontSizeRef = document.getElementById('fontSize')
+let writingArea = document.getElementById('text-input')
+let linkButton = document.getElementById('createLink')
+let alignButtons = document.querySelectorAll('.align')
+let spacingButtons = document.querySelectorAll('.spacing')
+let formatButtons = document.querySelectorAll('.format')
+let scriptButtons = document.querySelectorAll('.script')
 
-//List of fontlist
-let fontList = [
-  "Arial",
-  "Verdana",
-  "Times New Roman",
-  "Garamond",
-  "Georgia",
-  "Courier New",
-  "cursive",
-];
+// font列表
+let fontList = ['Arial', 'Verdana', 'Times New Roman', 'Garamond', 'Georgia', 'Courier New', 'cursive']
 
-//Initial Settings
+// 初始化
 const initializer = () => {
-  //function calls for highlighting buttons
-  //No highlights for link, unlink,lists, undo,redo since they are one time operations
-  highlighter(alignButtons, true);
-  highlighter(spacingButtons, true);
-  highlighter(formatButtons, false);
-  highlighter(scriptButtons, true);
+    highlighter(alignButtons, true)
+    highlighter(spacingButtons, true)
+    highlighter(formatButtons, false)
+    highlighter(scriptButtons, true)
 
-  //create options for font names
-  fontList.map((value) => {
-    let option = document.createElement("option");
-    option.value = value;
-    option.innerHTML = value;
-    fontName.appendChild(option);
-  });
+    // 为fontlist创造选项
+    fontList.map(value => {
+        let option = document.createElement('option')
+        option.value = value
+        option.innerHTML = value
+        fontName.appendChild(option)
+    })
 
-  //fontSize allows only till 7
-  for (let i = 1; i <= 7; i++) {
-    let option = document.createElement("option");
-    option.value = i;
-    option.innerHTML = i;
-    fontSizeRef.appendChild(option);
-  }
+    // fontsize最多为7
+    for (let i = 0; i < 7; i++) {
+        let option = document.createElement('option')
+        option.value = i
+        option.innerHTML = i
+        fontSizeRef.appendChild(option)
+    }
 
-  //default size
-  fontSizeRef.value = 3;
-};
+    // 默认fontsize
+    fontSizeRef.value = 3
 
-//main logic
-const modifyText = (command, defaultUi, value) => {
-  //execCommand executes command on selected text
-  document.execCommand(command, defaultUi, value);
-};
+    // 主要逻辑
+    // 修改文本
+    const modifyText = (command, defaultUi, value) => {
+        // execcommand允许操作可编辑内容区域的元素
+        document.execCommand(command, defaultUi, value)
+    }
 
-//For basic operations which don't need value parameter
-optionsButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    modifyText(button.id, false, null);
-  });
-});
+    // 不需要传值的操作
+    optionsButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // button.id作为command传入并实现对应的效果，具体见mdn execCommand
+            modifyText(button.id, false, null)
+        })
+    })
 
-//options that require value parameter (e.g colors, fonts)
-advancedOptionButton.forEach((button) => {
-  button.addEventListener("change", () => {
-    modifyText(button.id, false, button.value);
-  });
-});
+    // 需要传值的操作
+    advancedOptionButton.forEach(button => {
+        button.addEventListener('change', () => {
+            modifyText(button.id, false, button.value)
+        })
+    })
 
-//link
-linkButton.addEventListener("click", () => {
-  let userLink = prompt("Enter a URL");
-  //if link has http then pass directly else add https
-  if (/http/i.test(userLink)) {
-    modifyText(linkButton.id, false, userLink);
-  } else {
-    userLink = "http://" + userLink;
-    modifyText(linkButton.id, false, userLink);
-  }
-});
+    // 连接
+    linkButton.addEventListener('click', () => {
+        let userLink = prompt('Enter A URL')
+        // 判断连接有没有http开头
+        if(/http/i.test(userLink)){
+            modifyText(linkButton.id, false, userLink)
+        }else {
+            userLink = 'http://' + userLink
+            modifyText(linkButton.id, false, userLink)
+        }
+    })
+}
 
-//Highlight clicked button
+// 高亮被点击的按钮
 const highlighter = (className, needsRemoval) => {
-  className.forEach((button) => {
-    button.addEventListener("click", () => {
-      //needsRemoval = true means only one button should be highlight and other would be normal
-      if (needsRemoval) {
-        let alreadyActive = false;
-
-        //If currently clicked button is already active
-        if (button.classList.contains("active")) {
-          alreadyActive = true;
-        }
-
-        //Remove highlight from other buttons
-        highlighterRemover(className);
-        if (!alreadyActive) {
-          //highlight clicked button
-          button.classList.add("active");
-        }
-      } else {
-        //if other buttons can be highlighted
-        button.classList.toggle("active");
-      }
+    className.forEach(button => {
+        button.addEventListener('click', () => {
+            // 如果needsRemoval是true，那么只有一个按钮高亮其他原样
+            if(needsRemoval){
+                let alreadyActive = false
+                // 如果点击的按钮已经高亮
+                if(button.classList.contains('active')){
+                    alreadyActive = true
+                }
+                // 从其他按钮移除高亮
+                highlighterRemover(className)
+                if(!alreadyActive){
+                    // 高亮被点击按钮
+                    button.classList.add('active')
+                }
+            }
+            else{
+                button.classList.toggle('active')
+            }
+        })
     });
-  });
-};
+}
 
-const highlighterRemover = (className) => {
-  className.forEach((button) => {
-    button.classList.remove("active");
-  });
-};
+const highlighterRemover = className => {
+    className.forEach(button => {
+        button.classList.remove('active')
+    })
+}
 
-window.onload = initializer();
+window.onload = initializer()
